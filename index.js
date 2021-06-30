@@ -66,15 +66,32 @@ const generateId = () => {
 }
 
 app.post('/api/persons', (request, response) => {
-    const person = request.body
-    const id = generateId()
-    console.log(id)
+    const body = request.body
 
-    person.id = id
+    if(!body.name) {
+        return response.status(400).json({
+            error: 'Name missing.'
+        })
+    } else if (!body.number) {
+        return response.status(400).json({
+            error: 'Number missing.'
+        })
+    } else if (persons.find(person => body.name === person.name)) {
+        return response.status(400).json({
+            error: 'Person already exists.'
+        })
+    } else {
+        
+        person = {
+            name: body.name,
+            number: body.number,
+            id: generateId()
+        }
 
-    persons = persons.concat(person)
+        persons = persons.concat(person)
 
-    response.json(person)
+        response.json(person)
+    }
 })
 
 const PORT = 3001
